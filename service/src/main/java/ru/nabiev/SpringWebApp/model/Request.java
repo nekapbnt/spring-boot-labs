@@ -24,9 +24,8 @@ public class Request {
     @Size(max=32)
     private String operationUid;
 
-    private Systems systemName;
+    private String systemName;
 
-    @NotBlank
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private String systemTime;
 

@@ -3,6 +3,7 @@ package ru.nabiev.SpringWebApp.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,10 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.nabiev.SpringWebApp.exception.UnsupportedCodeException;
 import ru.nabiev.SpringWebApp.exception.ValidationFailedException;
 import ru.nabiev.SpringWebApp.model.*;
-import ru.nabiev.SpringWebApp.service.ModifyResponseService;
-import ru.nabiev.SpringWebApp.service.ValidationService;
+import ru.nabiev.SpringWebApp.service.*;
 import ru.nabiev.SpringWebApp.util.DateTimeUtil;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
@@ -23,21 +22,31 @@ import java.util.Date;
 public class MyController {
 
     private final ValidationService validationService;
-    private final ModifyResponseService modifyResponseService;
+    private final ModifyResponseService modifySystemTimeResponseService;
+    private final ModifyResponseService modifyOperationUidResponseService;
+    private final ModifyRequestService modifySourceRequestService;
+    private final ModifyRequestService modifySystemNameRequestService;
+    private final SendModifiedRequestService sendModifiedRequestService;
 
     @Autowired
-    public MyController(ValidationService validationService, ModifyResponseService modifyResponseService) {
+    public MyController(ValidationService validationService,
+                        @Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifySystemTimeResponseService,
+                        @Qualifier("ModifyOperationUidResponseService") ModifyResponseService modifyOperationUidResponseService,
+                        @Qualifier("ModifySystemNameRequestService") ModifySystemNameRequestService modifySystemNameRequestService,
+                        @Qualifier("SendModifiedRequestService") SendModifiedRequestService sendModifiedRequestService,
+                        @Qualifier("ModifySourceRequestService") ModifyRequestService modifySourceRequestService) {
         this.validationService = validationService;
-        this.modifyResponseService = modifyResponseService;
+        this.modifySystemTimeResponseService = modifySystemTimeResponseService;
+        this.modifyOperationUidResponseService = modifyOperationUidResponseService;
+        this.modifySystemNameRequestService = modifySystemNameRequestService;
+        this.modifySourceRequestService = modifySourceRequestService;
+        this.sendModifiedRequestService = sendModifiedRequestService;
     }
 
     @PostMapping(value = "/feedback")
     public ResponseEntity<Response> feedback(@Valid @RequestBody Request request, BindingResult bindingResult) {
 
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-        log.info("request: {}", request);
+        log.info("request source: {}", request);
 
         Response response = Response.builder()
                 .uid(request.getUid())
@@ -70,8 +79,13 @@ public class MyController {
             response.setErrorMessage(ErrorMessages.UNKNOWN);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        response = modifyResponseService.modify(response);
+        modifySystemNameRequestService.modify(request);
+        modifySourceRequestService.modify(request);
+        request.setSystemTime(DateTimeUtil.getCustomFormat().format(new Date()));
+        sendModifiedRequestService.send(request);
+        log.info("request : {}", request);
+        response = modifySystemTimeResponseService.modify(response);
+        response = modifyOperationUidResponseService.modify(response);
         log.info("response: {}", response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
