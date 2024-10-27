@@ -23,17 +23,35 @@ public class Request {
     @NotBlank
     @Size(max=32)
     private String operationUid;
-    private String systemName;
+
+    private Systems systemName;
 
     @NotBlank
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private String systemTime;
+
     private String source;
 
     @Min(1)
     @Max(100000)
     private Integer communicationId;
+
     private Integer templateId;
     private Integer productCode;
     private Integer smsCode;
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "uid='" + uid + '\'' +
+                ", operationUid='" + operationUid + '\'' +
+                ", systemName='" + systemName + '\'' +
+                ", systemTime='" + systemTime + '\'' +
+                ", source='" + source + '\'' +
+                ", communicationId=" + communicationId +
+                ", templateId=" + templateId +
+                ", productCode=" + productCode +
+                ", smsCode=" + smsCode +
+                '}';
+    }
 }
