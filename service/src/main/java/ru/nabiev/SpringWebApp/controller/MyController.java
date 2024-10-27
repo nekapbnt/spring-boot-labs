@@ -15,6 +15,9 @@ import ru.nabiev.SpringWebApp.model.*;
 import ru.nabiev.SpringWebApp.service.ModifyResponseService;
 import ru.nabiev.SpringWebApp.service.ValidationService;
 import ru.nabiev.SpringWebApp.util.DateTimeUtil;
+
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -73,6 +76,15 @@ public class MyController {
 
         response = modifyResponseService.modify(response);
         log.info("response: {}", response);
+        DateFormat dateFormat = DateTimeUtil.getCustomFormat();
+        try {
+            Date date1 = dateFormat.parse(request.getSystemTime());
+            Date date2 = new Date();
+            long dt = date2.getTime() - date1.getTime();
+            log.info("Time since user sent request (ms): {}", dt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
