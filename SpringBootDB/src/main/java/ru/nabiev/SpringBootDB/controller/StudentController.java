@@ -20,46 +20,76 @@ public class StudentController {
 
     @GetMapping("/students")
     public ResponseEntity<List<Student>> allStudents() {
-        List<Student> allStudents = studentService.getAllStudents();
-        if (allStudents.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            List<Student> allStudents = studentService.getAllStudents();
+            if (allStudents.isEmpty()) {
+                log.info("Not found.");
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            log.info("Success: {}", allStudents);
+            return new ResponseEntity<>(allStudents, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error:", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(allStudents, HttpStatus.OK);
     }
 
     @GetMapping("/students/{id}")
     public ResponseEntity<Student> getStudent(@PathVariable("id") int id) {
-        Student student = studentService.getStudent(id);
-        if (student == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Student student = studentService.getStudent(id);
+            if (student == null) {
+                log.info("{} not found.", id);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            log.info("Success id {}: {}", id, student);
+            return new ResponseEntity<>(student, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error id {}", id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
     @PostMapping("/students")
     public ResponseEntity<Student> saveStudent(@RequestBody Student student) {
-        Student savedStudent = studentService.saveStudent(student);
-        if (savedStudent == null) {
+        try {
+            Student savedStudent = studentService.saveStudent(student);
+            if (savedStudent == null) {
+                log.error("Not found");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            log.info("Success id {}", savedStudent.getId());
+            return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
     }
 
     @PutMapping("/students")
     public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
-        Student updatedStudent = studentService.saveStudent(student);
-        if (updatedStudent == null) {
+        try {
+            Student updatedStudent = studentService.saveStudent(student);
+            if (updatedStudent == null) {
+                log.error("Not found");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            log.info("Success id {}", updatedStudent.getId());
+            return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error:", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
     }
 
     @DeleteMapping("/students/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable("id") int id) {
         try {
             studentService.deleteStudent(id);
+            log.info("Success id {}.", id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            log.error("Error id {}", id, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -20,46 +20,76 @@ public class DisciplineController {
 
     @GetMapping("/disciplines")
     public ResponseEntity<List<Discipline>> allDisciplines() {
-        List<Discipline> allDisciplines = disciplineService.getAllDisciplines();
-        if (allDisciplines.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            List<Discipline> allDisciplines = disciplineService.getAllDisciplines();
+            if (allDisciplines.isEmpty()) {
+                log.info("Not found.");
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            log.info("Success: {}", allDisciplines);
+            return new ResponseEntity<>(allDisciplines, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error:", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(allDisciplines, HttpStatus.OK);
     }
 
     @GetMapping("/disciplines/{id}")
     public ResponseEntity<Discipline> getDiscipline(@PathVariable("id") int id) {
-        Discipline discipline = disciplineService.getDiscipline(id);
-        if (discipline == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Discipline discipline = disciplineService.getDiscipline(id);
+            if (discipline == null) {
+                log.info("{} not found.", id);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            log.info("Success id {}: {}", id, discipline);
+            return new ResponseEntity<>(discipline, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error id {}", id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(discipline, HttpStatus.OK);
     }
 
     @PostMapping("/disciplines")
     public ResponseEntity<Discipline> saveDiscipline(@RequestBody Discipline discipline) {
-        Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
-        if (savedDiscipline == null) {
+        try {
+            Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+            if (savedDiscipline == null) {
+                log.error("Not found");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            log.info("Success id {}", savedDiscipline.getId());
+            return new ResponseEntity<>(savedDiscipline, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Error", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(savedDiscipline, HttpStatus.CREATED);
     }
 
     @PutMapping("/disciplines")
     public ResponseEntity<Discipline> updateDiscipline(@RequestBody Discipline discipline) {
-        Discipline updatedDiscipline = disciplineService.saveDiscipline(discipline);
-        if (updatedDiscipline == null) {
+        try {
+            Discipline updatedDiscipline = disciplineService.saveDiscipline(discipline);
+            if (updatedDiscipline == null) {
+                log.error("Not found");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            log.info("Success id {}", updatedDiscipline.getId());
+            return new ResponseEntity<>(updatedDiscipline, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error:", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(updatedDiscipline, HttpStatus.OK);
     }
 
     @DeleteMapping("/disciplines/{id}")
     public ResponseEntity<Void> deleteDiscipline(@PathVariable("id") int id) {
         try {
             disciplineService.deleteDiscipline(id);
+            log.info("Success id {} .", id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            log.error("Error id {}", id, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
