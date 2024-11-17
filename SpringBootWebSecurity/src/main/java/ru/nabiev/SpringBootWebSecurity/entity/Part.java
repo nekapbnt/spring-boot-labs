@@ -11,9 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "students")
-public class Student {
-
+@Table(name = "part")
+public class Part {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -22,13 +21,15 @@ public class Student {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "surname")
-    private String surname;
+    @Column(name = "article")
+    private String article;
 
-    @Column(name = "faculty")
-    private String faculty;
+    @Column(name = "brand")
+    private String brand;
 
-    @Column(name = "age")
-    private int age;
+    @Column(name = "model")
+    private String model;
 
+    @Column(name = "price")
+    private int price;
 }

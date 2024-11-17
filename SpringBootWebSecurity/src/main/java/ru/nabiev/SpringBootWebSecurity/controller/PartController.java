@@ -8,54 +8,54 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import ru.nabiev.SpringBootWebSecurity.entity.Student;
-import ru.nabiev.SpringBootWebSecurity.repository.StudentRepository;
+import ru.nabiev.SpringBootWebSecurity.entity.Part;
+import ru.nabiev.SpringBootWebSecurity.repository.PartRepository;
 import java.util.Optional;
 
 @Slf4j
 @Controller
-public class StudentController {
+public class PartController {
 
     @Autowired
-    private StudentRepository studentRepository;
+    private PartRepository partRepository;
 
     @GetMapping("/list")
-    public ModelAndView getAllStudents() {
+    public ModelAndView getAllParts() {
         log.info("/list -> connection");
-        ModelAndView mav = new ModelAndView("list-students");
-        mav.addObject("students", studentRepository.findAll());
+        ModelAndView mav = new ModelAndView("list-parts");
+        mav.addObject("parts", partRepository.findAll());
         return mav;
     }
 
-    @GetMapping("/addStudentForm")
-    public ModelAndView addStudentForm() {
-        ModelAndView mav = new ModelAndView("add-student-form");
-        Student student = new Student();
-        mav.addObject("student", student);
+    @GetMapping("/addPartForm")
+    public ModelAndView addPartForm() {
+        ModelAndView mav = new ModelAndView("add-part-form");
+        Part part = new Part();
+        mav.addObject("part", part);
         return mav;
     }
 
-    @PostMapping("/saveStudent")
-    public String saveStudent(@ModelAttribute Student student) {
-        studentRepository.save(student);
+    @PostMapping("/savePart")
+    public String savePart(@ModelAttribute Part part) {
+        partRepository.save(part);
         return "redirect:/list";
     }
 
     @GetMapping("/showUpdateForm")
-    public ModelAndView showUpdateForm(@RequestParam Long studentId) {
-        ModelAndView mav = new ModelAndView("add-student-form");
-        Optional<Student> optionalStudent = studentRepository.findById(studentId);
-        Student student = new Student();
-        if (optionalStudent.isPresent()) {
-            student = optionalStudent.get();
+    public ModelAndView showUpdateForm(@RequestParam Long partId) {
+        ModelAndView mav = new ModelAndView("add-part-form");
+        Optional<Part> optionalPart = partRepository.findById(partId);
+        Part part = new Part();
+        if (optionalPart.isPresent()) {
+            part = optionalPart.get();
         }
-        mav.addObject("student", student);
+        mav.addObject("part", part);
         return mav;
     }
 
-    @GetMapping("/deleteStudent")
-    public String deleteStudent(@RequestParam Long studentId) {
-        studentRepository.deleteById(studentId);
+    @GetMapping("/deletePart")
+    public String deletePart(@RequestParam Long partId) {
+        partRepository.deleteById(partId);
         return "redirect:/list";
     }
 }
