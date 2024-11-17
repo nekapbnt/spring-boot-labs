@@ -32,6 +32,9 @@ public class SecurityController {
         return "login";
     }
 
+    @GetMapping("/about")
+    public String about() {return "about";}
+
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         UserDto userDto = new UserDto();
