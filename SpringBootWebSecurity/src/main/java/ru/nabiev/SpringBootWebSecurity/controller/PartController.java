@@ -3,6 +3,7 @@ package ru.nabiev.SpringBootWebSecurity.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ru.nabiev.SpringBootWebSecurity.entity.Part;
 import ru.nabiev.SpringBootWebSecurity.repository.PartRepository;
+import ru.nabiev.SpringBootWebSecurity.service.PartService;
+
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -18,6 +22,9 @@ public class PartController {
 
     @Autowired
     private PartRepository partRepository;
+
+    @Autowired
+    private PartService partService;
 
     @GetMapping("/list")
     public ModelAndView getAllParts() {
@@ -57,5 +64,21 @@ public class PartController {
     public String deletePart(@RequestParam Long partId) {
         partRepository.deleteById(partId);
         return "redirect:/list";
+    }
+
+    @GetMapping("/filterPartForm")
+    public String filterPartForm() {
+        return "filter-part";
+    }
+
+    @GetMapping("/applyFilter")
+    public ModelAndView applyFilter(
+            @RequestParam(required = false) String article,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) String brand) {
+
+        ModelAndView mav = new ModelAndView("list-parts");
+        mav.addObject("parts", partService.filterParts(article, model, brand));
+        return mav;
     }
 }
