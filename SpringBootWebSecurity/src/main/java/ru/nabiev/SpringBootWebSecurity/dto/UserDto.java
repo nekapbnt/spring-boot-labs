@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.nabiev.SpringBootWebSecurity.entity.Role;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,5 +30,8 @@ public class UserDto {
 
     @NotEmpty(message = "Password should not be empty.")
     private String password;
+
+    @NotEmpty
+    private String role;
 
 }

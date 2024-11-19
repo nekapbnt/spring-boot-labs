@@ -27,4 +27,12 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private List<User> users = new ArrayList<>();
 
+
+    @JoinTable(
+            name = "roles_privileges",
+            joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "privilege_id", referencedColumnName = "id")}
+    )
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Privilege> privileges = new ArrayList<>();
 }
